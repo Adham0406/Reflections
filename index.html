@@ -32,6 +32,13 @@
   #status { font-size: 13px; color: var(--ui-dim); min-height: 1.2em; max-width: 560px; }
   #status b { color: var(--ui); }
   .hint { font-size: 12px; color: rgba(255,255,255,.35); max-width: 560px; line-height: 1.6; }
+  #lyrPanel { display: none; flex-direction: column; align-items: center; gap: 10px; width: min(560px, 100%); }
+  #lyrPanel.show { display: flex; }
+  .pill { cursor: pointer; font: 600 14px Inter, sans-serif; color: #ffd6e3; border: 1px solid rgba(255,214,227,.5);
+    border-radius: 999px; padding: 12px 22px; background: rgba(255,214,227,.06); }
+  .pill:hover { background: rgba(255,214,227,.14); }
+  .mini { font-size: 12px; color: rgba(255,255,255,.45); line-height: 1.7; }
+  .mini a { color: var(--accent); }
   #pasteWrap { display: none; flex-direction: column; gap: 8px; width: min(560px, 100%); }
   #pasteWrap textarea { width: 100%; height: 160px; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.2);
     border-radius: 10px; padding: 10px; font: 12px ui-monospace, Consolas, monospace; }
@@ -66,6 +73,18 @@
   <h2>The Neighbourhood</h2>
   <h1>REFLECTIONS</h1>
   <div id="status">Matn yuklanmoqda…</div>
+  <div id="lyrPanel">
+    <label class="pill">📄 Matn faylini tanlash (.lrc)<input type="file" id="lrcFile" accept=".lrc,.txt,text/plain" hidden></label>
+    <div class="mini">
+      <a href="https://lrclib.net/" target="_blank" rel="noopener">lrclib.net</a> dan "Reflections" ni topib .lrc yuklab oling ·
+      <button class="linkbtn" id="pasteBtn">matnni qo'yish</button> ·
+      <button class="linkbtn" id="retryBtn">qayta urinish</button>
+    </div>
+    <div id="pasteWrap">
+      <textarea id="pasteArea" placeholder="[00:09.38] ..."></textarea>
+      <button id="pasteOk" class="linkbtn">Qo'llash</button>
+    </div>
+  </div>
   <button id="play" disabled>▶ BOSHLASH</button>
 </div>
 

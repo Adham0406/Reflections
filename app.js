@@ -137,6 +137,7 @@ function setLyrics(txt, source) {
   snapSections();
   try { localStorage.setItem(CACHE_KEY, txt); } catch {}
   setStatus(`Matn tayyor: <b>${lines.length}</b> qator (${source}).`);
+  showLyrPanel(false);
   return true;
 }
 
@@ -162,7 +163,7 @@ async function loadLyrics() {
   setStatus('Matn LRCLIB dan yuklanmoqda…');
   const to = ms => (window.AbortSignal && AbortSignal.timeout) ? AbortSignal.timeout(ms) : undefined;
   try {
-    const r = await fetch(`api/lyrics?artist=${encodeURIComponent(TRACK.artist)}&track=${encodeURIComponent(TRACK.title)}&duration=${TRACK.duration}`, { signal: to(25000) });
+    const r = await fetch(`api/lyrics?artist=${encodeURIComponent(TRACK.artist)}&track=${encodeURIComponent(TRACK.title)}&duration=${TRACK.duration}`, { signal: to(15000) });
     if (r.ok) { const j = await r.json(); if (j.syncedLyrics && setLyrics(j.syncedLyrics, 'LRCLIB')) return; }
   } catch {}
   const q = `artist_name=${encodeURIComponent(TRACK.artist)}&track_name=${encodeURIComponent(TRACK.title)}`;
@@ -178,8 +179,10 @@ async function loadLyrics() {
       if (arr[0] && setLyrics(arr[0].syncedLyrics, 'LRCLIB')) return;
     }
   } catch {}
-  setStatus('Matn topilmadi (internet yo\'qmi?). <b>.lrc</b> faylni tashlang yoki LRC matnini qo\'ying. Vizual baribir ishlaydi.');
+  setStatus('Matn serveri bu tarmoqdan ochilmadi. Matn faylini tanlang — u shu brauzerda saqlanib qoladi.');
+  showLyrPanel(true);
 }
+function showLyrPanel(on) { const p = $('lyrPanel'); if (p) p.classList.toggle('show', on); }
 
 function setStatus(html) { $('status').innerHTML = html; }
 
@@ -731,6 +734,12 @@ addEventListener('drop', async e => {
   const f = e.dataTransfer.files[0]; if (!f) return;
   if (!setLyrics(await f.text(), f.name)) setStatus('Bu fayl LRC formatida emas (masalan: <b>[00:12.34] matn</b>).');
 });
+$('lrcFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  if (!setLyrics(await f.text(), f.name)) setStatus('Bu fayl LRC formatida emas (masalan: <b>[00:12.34] matn</b>).');
+  e.target.value = '';
+});
+$('retryBtn').onclick = () => { showLyrPanel(false); $('play').disabled = true; loadLyrics().finally(() => { $('play').disabled = false; }); };
 if ($('pasteBtn')) $('pasteBtn').onclick = () => { $('pasteWrap').style.display = 'flex'; };
 if ($('pasteOk')) $('pasteOk').onclick =() => { if (!setLyrics($('pasteArea').value, 'qo\'yilgan matn')) setStatus('LRC formatini tekshiring: <b>[mm:ss.xx] matn</b>'); else $('pasteWrap').style.display = 'none'; };
 
